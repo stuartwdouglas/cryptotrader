@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.jboss.cryptotrader</groupId>
-    <artifactId>cryptotrader-bank</artifactId>
+    <artifactId>cryptotrader-game</artifactId>
     <version>1.0.0.Alpha1-SNAPSHOT</version>
     <packaging>war</packaging>
 
@@ -32,6 +32,11 @@
             <artifactId>jboss-json-api_1.1_spec</artifactId>
             <version>1.0.0.Final</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.json.bind</groupId>
+            <artifactId>javax.json.bind-api</artifactId>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
@@ -62,7 +67,7 @@
     </dependencyManagement>
 
     <build>
-        <finalName>bank</finalName>
+        <finalName>game</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>

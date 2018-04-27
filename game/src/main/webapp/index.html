@@ -1,0 +1,103 @@
+<html>
+    <head>
+        <title>Crypto Trader</title>
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <!-- We are just using the development version of react, not suitable for production-->
+        <script src="js/react.development.js"></script>
+        <script src="js/react-dom.development.js"></script>
+        <script src="js/babel.min.js" charset="UTF-8"></script>
+    </head>
+    <body>
+
+    <div id="root"></div>
+    <script type="text/babel">
+
+      class App extends React.Component {
+
+        constructor(props) {
+            super(props);
+            this.state={name:'', running:false};
+            this.startGame = this.startGame.bind(this);
+            this.restartGame = this.restartGame.bind(this);
+        }
+
+        startGame(playerName) {
+            this.setState((prevState, props) => ({
+                running: true, name: playerName
+            }));
+        }
+
+        restartGame() {
+            this.setState((prevState, props) => ({
+                running: false, name: ''
+            }));
+        }
+
+        render() {
+            const pageBody = this.state.running ? <RunGame name={this.state.name}/> : <StartGame start={this.startGame}/>
+
+            return (
+              <div className="container-fluid">
+                <Header restart={this.restartGame}/>
+                {pageBody}
+              </div>
+            );
+          }
+      }
+
+      function Header(props) {
+        return (<nav className="navbar navbar-light bg-light">
+            <a className="navbar-brand">Crypto Trader</a>
+            <form className="form-inline">
+                <button className="btn btn-outline-success my-2 my-sm-0" onClick={props.restart} type="button" >Restart Game</button>
+            </form>
+        </nav>);
+      }
+
+      class StartGame extends React.Component {
+
+        constructor(props) {
+            super(props);
+            this.state={name:''};
+            this.handleChange = this.handleChange.bind(this);
+            this.startGame = this.startGame.bind(this);
+        }
+
+        handleChange(event) {
+            this.setState({name: event.target.value});
+        }
+
+        startGame(e) {
+            this.props.start(this.state.name)
+        }
+
+        render() {
+            return (
+            <div className="row" id="start">
+                <div className="col-sm-4 offset-sm-4">
+                    <form>
+                        <div className="form-group">
+                            <label htmlFor="nameInput">Name</label>
+                            <input type="text" className="form-control" id="nameInput" aria-describedby="nameHelp" placeholder="Enter your name" value={this.state.name} onChange={this.handleChange} />
+                            <small id="nameHelp" className="form-text text-muted">Please enter your name to begin</small>
+                        </div>
+                        <button type="submit" className="btn btn-primary" onClick={this.startGame}>Start Game</button>
+                    </form>
+                </div>
+            </div>);
+        }
+      }
+
+      function RunGame(props) {
+        return "running! " + props.name
+      }
+
+
+      ReactDOM.render(
+        <App/>
+        ,document.getElementById('root')
+      );
+
+    </script>
+    </body>
+</html>
