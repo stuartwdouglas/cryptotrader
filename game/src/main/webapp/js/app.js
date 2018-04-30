@@ -30,7 +30,7 @@ class App extends React.Component {
         })
         .then(response => response.json())
         .then(data => {
-            this.setState({running: true, name: playerName, balance: data.balance, accountNo: data.accountNo});
+            this.setState({running: true, name: playerName, balance: data.balance, accountNo: data.accountNo, btcHoldings: 0});
             //start updating the bank balance using server sent events
             var bankSrc = new EventSource("/game/bank/balance/watch/" + data.accountNo);
             bankSrc.addEventListener("balance", this.updateBankBalance);
@@ -156,7 +156,7 @@ class RunningGame extends React.Component {
   }
 
   sell(){
-    this.doTrade(-this.state.units);
+    this.props.tradeBtc(-this.state.units);
   }
 
   buy(){
