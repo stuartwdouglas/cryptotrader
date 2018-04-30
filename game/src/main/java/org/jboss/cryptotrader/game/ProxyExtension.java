@@ -10,6 +10,7 @@ import javax.servlet.ServletContext;
 import io.undertow.predicate.Predicates;
 import io.undertow.server.HandlerWrapper;
 import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.PredicateHandler;
 import io.undertow.server.handlers.proxy.LoadBalancingProxyClient;
 import io.undertow.server.handlers.proxy.ProxyHandler;
@@ -33,7 +34,13 @@ public class ProxyExtension implements ServletExtension {
                     try {
                         ProxyHandler proxyHandler = new ProxyHandler(new LoadBalancingProxyClient()
                                 .addHost(new URI("http://" + service + ".eap-demo.svc:8080")), httpHandler);
-                        return new PredicateHandler(Predicates.prefix("/" + service), proxyHandler, httpHandler);
+                        return new PredicateHandler(Predicates.prefix("/" + service), new HttpHandler() {
+                            @Override
+                            public void handleRequest(HttpServerExchange exchange) throws Exception {
+                                exchange.setRelativePath(exchange.getRequestPath());
+                                proxyHandler.handleRequest(exchange);
+                            }
+                        }, httpHandler);
                     } catch (URISyntaxException e) {
                         throw new RuntimeException(e);
                     }
