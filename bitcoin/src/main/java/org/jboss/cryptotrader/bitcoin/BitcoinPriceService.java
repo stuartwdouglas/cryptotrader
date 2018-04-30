@@ -32,6 +32,8 @@ public class BitcoinPriceService {
 
     private volatile BigDecimal price = BigDecimal.ONE; //we start out at one
 
+    private static final BigDecimal CRASH_CEILING = new BigDecimal("20000");
+
     @Inject
     @BitcoinPriceChange
     private Event<BigDecimal> priceChangeEvent;
@@ -61,10 +63,15 @@ public class BitcoinPriceService {
                 ticksTillConditionsChange = random.nextInt(20) + 15;
                 System.out.println("BULL MARKET " + marketDirection + " " + ticksTillConditionsChange);
             }
+        } else if(price.compareTo(CRASH_CEILING) > 0) {
+            //if the price gets too high there will be a big crash
+            marketDirection = BigDecimal.valueOf((random.nextDouble() * -0.1) - 0.1);
+            ticksTillConditionsChange = random.nextInt(10) + 10;
+            System.out.println("CRASH " + marketDirection + " " + ticksTillConditionsChange);
         }
 
         double change = random.nextDouble() * 0.02 - 0.01;
-        price = price.add(price.multiply(marketDirection).add(BigDecimal.valueOf(change)));
+        price = price.add(price.multiply(marketDirection.add(BigDecimal.valueOf(change))));
         priceChangeEvent.fire(price);
     }
 

@@ -2,6 +2,8 @@ package org.jboss.cryptotrader.bitcoin;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -26,7 +28,19 @@ import javax.ws.rs.core.Response;
 @ApplicationScoped
 public class BitcoinExchange {
 
-    private static final String TRANSACT = "http://localhost:8080/game/bank/transact/";
+    private static final String TRANSACT;
+
+    static {
+        String host;
+        try {
+            InetAddress.getByName("bitcoin.eap-demo.svc");
+            host = "http://bitcoin.eap-demo.svc:8080/game/bank/transact/";
+        } catch (UnknownHostException e) {
+            host = "http://localhost:8080/game/bank/transact/";
+        }
+        TRANSACT = host;
+
+    }
     /**
      * We just track holdings in a map keyed by client name
      */
