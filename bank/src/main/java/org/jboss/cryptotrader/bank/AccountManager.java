@@ -50,7 +50,7 @@ public class AccountManager {
 
             //generate a random account number
             SecureRandom random = new SecureRandom(); //make it secure, we are a bank after all
-            String accno = Integer.toString(1000000 + random.nextInt() % 9000000);
+            String accno = Integer.toString(1000000 + Math.abs(random.nextInt() % 9000000));
 
             //we check if the account number exists, we do this using the json pointer API
             //we expect this to throw an exception, if it does not then the account exists so try again

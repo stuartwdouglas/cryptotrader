@@ -2,6 +2,7 @@ package org.jboss.cryptotrader.bank;
 
 import java.math.BigDecimal;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.json.JsonObject;
@@ -12,6 +13,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 
 @Path("/transact")
+@Dependent
 public class TransactEndpoint {
 
     @Inject
@@ -27,7 +29,7 @@ public class TransactEndpoint {
         String clientName = jsonObject.getString("name");
         BigDecimal amount = jsonObject.getJsonNumber("amount").bigDecimalValue();
         BigDecimal newBalance = accountManager.transact(accountNo, clientName, amount);
-        event.fireAsync(new TransactionEvent(accountNo, clientName, newBalance));
+        event.fire(new TransactionEvent(accountNo, clientName, newBalance));
     }
 
 }

@@ -4,9 +4,9 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.ws.rs.Consumes;
@@ -25,7 +25,7 @@ import javax.ws.rs.sse.SseEventSink;
  * Endpoint that can be used to query the bank balance, and register for server sent events to be notified of changes
  */
 @Path("/balance")
-@Singleton
+@ApplicationScoped
 public class BalanceEndpoint {
 
     @Context
