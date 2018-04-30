@@ -32,7 +32,7 @@ public class ProxyExtension implements ServletExtension {
                     try {
                         ProxyHandler proxyHandler = new ProxyHandler(new LoadBalancingProxyClient()
                                 .addHost(new URI("http://" + service + ":8080")), httpHandler);
-                        return new PredicateHandler(Predicates.prefix("/game/" + service), proxyHandler, httpHandler);
+                        return new PredicateHandler(Predicates.prefix("/" + service), proxyHandler, httpHandler);
                     } catch (URISyntaxException e) {
                         throw new RuntimeException(e);
                     }
