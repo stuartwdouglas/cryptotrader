@@ -24,7 +24,7 @@ import javax.ws.rs.sse.SseEventSink;
 /**
  * Endpoint that can be used to query the bank balance, and register for server sent events to be notified of changes
  */
-@Path("/balance")
+@Path("/bank/balance")
 @ApplicationScoped
 public class BalanceEndpoint {
 

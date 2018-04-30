@@ -46,28 +46,28 @@ public class BitcoinPriceService {
                 //CRASH
                 marketDirection = BigDecimal.valueOf((random.nextDouble() * -0.1) - 0.02);
                 ticksTillConditionsChange = random.nextInt(10) + 5; //crashs are short and sharp
-                System.out.println("CRASH " + marketDirection + " " + ticksTillConditionsChange);
+                System.out.println("BITCOIN CRASH " + marketDirection + " " + ticksTillConditionsChange);
             } else if(direction <= 10) {
                 //RUSH
                 marketDirection = BigDecimal.valueOf((random.nextDouble() * 0.1) + 0.01);
                 ticksTillConditionsChange = random.nextInt(20) + 5;
-                System.out.println("RUSH " + marketDirection + " " + ticksTillConditionsChange);
+                System.out.println("BITCOIN RUSH " + marketDirection + " " + ticksTillConditionsChange);
             } else if(direction <= 40) {
                 //BEAR MARKET
                 marketDirection = BigDecimal.valueOf((random.nextDouble() * -0.03));
                 ticksTillConditionsChange = random.nextInt(20) + 15;
-                System.out.println("BEAR MARKET " + marketDirection + " " + ticksTillConditionsChange);
+                System.out.println("BITCOIN BEAR MARKET " + marketDirection + " " + ticksTillConditionsChange);
             } else {
                 //BULL MARKET
                 marketDirection = BigDecimal.valueOf(random.nextDouble() * 0.05);
                 ticksTillConditionsChange = random.nextInt(20) + 15;
-                System.out.println("BULL MARKET " + marketDirection + " " + ticksTillConditionsChange);
+                System.out.println("BITCOIN BULL MARKET " + marketDirection + " " + ticksTillConditionsChange);
             }
         } else if(price.compareTo(CRASH_CEILING) > 0) {
             //if the price gets too high there will be a big crash
             marketDirection = BigDecimal.valueOf((random.nextDouble() * -0.1) - 0.1);
             ticksTillConditionsChange = random.nextInt(10) + 10;
-            System.out.println("CRASH " + marketDirection + " " + ticksTillConditionsChange);
+            System.out.println("BITCOIN LIMIT CRASH " + marketDirection + " " + ticksTillConditionsChange);
         }
 
         double change = random.nextDouble() * 0.02 - 0.01;

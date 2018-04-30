@@ -1,6 +1,7 @@
 package org.jboss.cryptotrader.bitcoin;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -20,7 +21,7 @@ import javax.ws.rs.sse.SseEventSink;
 /**
  * Endpoint that can be used to get bitcoin price
  */
-@Path("/price")
+@Path("/bitcoin/price")
 @ApplicationScoped
 public class BitcoinPriceEndpoint {
 
@@ -50,7 +51,7 @@ public class BitcoinPriceEndpoint {
     }
 
     public void priceChange(@Observes @BitcoinPriceChange BigDecimal price) {
-        broadcaster.broadcast(sse.newEvent(price.toString()));
+        broadcaster.broadcast(sse.newEvent(price.setScale(10, RoundingMode.HALF_DOWN).toString()));
     }
 
     @Produces(MediaType.SERVER_SENT_EVENTS)

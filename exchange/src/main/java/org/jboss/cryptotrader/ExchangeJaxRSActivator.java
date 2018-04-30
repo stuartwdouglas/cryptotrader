@@ -1,8 +1,8 @@
-package org.jboss.cryptotrader.bitcoin;
+package org.jboss.cryptotrader;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
 @ApplicationPath("/")
-public class BitcoinJaxRSActivator extends Application {
+public class ExchangeJaxRSActivator extends Application {
 }

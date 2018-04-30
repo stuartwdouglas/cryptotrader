@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.jboss.cryptotrader</groupId>
-    <artifactId>cryptotrader-bank</artifactId>
-    <version>1.0.0.Alpha1-SNAPSHOT</version>
+    <artifactId>exchange</artifactId>
+    <version>1.0.0.Alpha1</version>
     <packaging>war</packaging>
 
     <dependencies>
@@ -28,23 +28,22 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.jboss.spec.javax.json</groupId>
-            <artifactId>jboss-json-api_1.1_spec</artifactId>
+            <groupId>org.jboss.spec.javax.enterprise.concurrent</groupId>
+            <artifactId>jboss-concurrency-api_1.0_spec</artifactId>
+            <version>1.0.2.Final</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.spec.javax.servlet</groupId>
+            <artifactId>jboss-servlet-api_4.0_spec</artifactId>
             <version>1.0.0.Final</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.json</artifactId>
-            <version>1.1.2</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-            <version>4.12</version>
+            <groupId>javax.json.bind</groupId>
+            <artifactId>javax.json.bind-api</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -62,7 +61,6 @@
     </dependencyManagement>
 
     <build>
-        <finalName>bank</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>

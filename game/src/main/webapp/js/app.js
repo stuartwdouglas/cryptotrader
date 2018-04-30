@@ -14,14 +14,14 @@ class App extends React.Component {
         this.state={name:'', running:false, balance: 0, btc: 1, btcHoldings: 0, processing: false};
         this.startGame = this.startGame.bind(this);
         this.restartGame = this.restartGame.bind(this);
-        this.updateBtcPrice = this.updateBtcPrice.bind(this);
+        this.updateExchangePricing = this.updateExchangePricing.bind(this);
         this.updateBankBalance = this.updateBankBalance.bind(this);
         this.tradeBtc = this.tradeBtc.bind(this);
     }
 
     startGame(playerName) {
         //open the bank account
-        fetch("/game/bank/open", {
+        fetch("/game/rest/bank/open", {
             method: 'post',
             headers: {
             "Content-type": "application/json; charset=UTF-8"
@@ -32,7 +32,7 @@ class App extends React.Component {
         .then(data => {
             this.setState({running: true, name: playerName, balance: data.balance, accountNo: data.accountNo, btcHoldings: 0});
             //start updating the bank balance using server sent events
-            var bankSrc = new EventSource("/game/bank/balance/watch/" + data.accountNo);
+            var bankSrc = new EventSource("/game/rest/bank/balance/watch/" + data.accountNo);
             bankSrc.addEventListener("balance", this.updateBankBalance);
         })
         .catch(function(e) {
@@ -40,12 +40,13 @@ class App extends React.Component {
         });
 
         //start updating the bitcoin price using server sent events
-        var evtSource = new EventSource("/game/bitcoin/price/watch");
-        evtSource.onmessage = this.updateBtcPrice;
+        var evtSource = new EventSource("/game/rest/price/watch");
+        evtSource.onmessage = this.updateExchangePricing;
     }
 
-    updateBtcPrice(e) {
-        this.setState((prevState, props) => ({ btc: e.data }));
+    updateExchangePricing(e) {
+        var data = JSON.parse(e.data);
+        this.setState((prevState, props) => ({ btc: data.bitcoin }));
     }
 
     updateBankBalance(e) {
@@ -57,7 +58,7 @@ class App extends React.Component {
     tradeBtc(units) {
 
         this.setState({processing: true})
-        fetch("/game/bitcoin/exchange", {
+        fetch("/game/rest/trade/bitcoin", {
                 method: 'post',
                 headers: {
                 "Content-type": "application/json; charset=UTF-8"

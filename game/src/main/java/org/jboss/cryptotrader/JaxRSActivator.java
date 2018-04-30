@@ -1,8 +1,8 @@
-package org.jboss.cryptotrader.bank;
+package org.jboss.cryptotrader;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
-@ApplicationPath("/")
+@ApplicationPath("/rest")
 public class JaxRSActivator extends Application {
 }

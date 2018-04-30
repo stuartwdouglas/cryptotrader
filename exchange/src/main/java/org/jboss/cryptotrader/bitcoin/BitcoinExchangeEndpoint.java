@@ -24,9 +24,9 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Path("/exchange")
+@Path("/bitcoin/trade")
 @ApplicationScoped
-public class BitcoinExchange {
+public class BitcoinExchangeEndpoint {
 
     private static final String TRANSACT;
 
@@ -34,9 +34,9 @@ public class BitcoinExchange {
         String host;
         try {
             InetAddress.getByName("bank");
-            host = "http://bank:8080/game/bank/transact/";
+            host = "http://bank:8080/game/rest/bank/transact/";
         } catch (UnknownHostException e) {
-            host = "http://localhost:8080/game/bank/transact/";
+            host = "http://localhost:8080/game/rest/bank/transact/";
         }
         TRANSACT = host;
 

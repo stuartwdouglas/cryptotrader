@@ -12,7 +12,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 
-@Path("/transact")
+@Path("/bank/transact")
 @Dependent
 public class TransactEndpoint {
 
