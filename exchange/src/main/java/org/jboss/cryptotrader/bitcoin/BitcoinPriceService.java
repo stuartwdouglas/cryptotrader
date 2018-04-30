@@ -72,7 +72,7 @@ public class BitcoinPriceService {
 
         double change = random.nextDouble() * 0.02 - 0.01;
         price = price.add(price.multiply(marketDirection.add(BigDecimal.valueOf(change))));
-        priceChangeEvent.fire(price);
+        priceChangeEvent.fireAsync(price);
     }
 
     public BigDecimal getPrice() {

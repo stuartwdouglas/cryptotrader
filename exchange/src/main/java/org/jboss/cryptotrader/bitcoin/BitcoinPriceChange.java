@@ -13,8 +13,4 @@ import javax.inject.Qualifier;
 @Qualifier
 public @interface BitcoinPriceChange {
 
-    class Literal extends AnnotationLiteral<BitcoinPriceChange> implements BitcoinPriceChange {
-
-    }
-
 }

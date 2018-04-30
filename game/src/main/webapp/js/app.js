@@ -210,6 +210,10 @@ class RunningGame extends React.Component {
                 <button className="btn btn-outline-danger" type="button" onClick={this.sell} disabled={this.props.processing}>Sell</button>
               </div>
             </div>
+            {this.props.processing ? (
+            <div className="alert alert-primary" role="alert" enabled={this.props.processing}>
+              Trading in progress, please wait...
+            </div>) : ''}
           </div>
 
           <div className="col-sm-4">

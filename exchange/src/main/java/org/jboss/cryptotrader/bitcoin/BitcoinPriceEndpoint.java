@@ -6,7 +6,6 @@ import java.math.RoundingMode;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
 import javax.enterprise.event.ObservesAsync;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -50,7 +49,7 @@ public class BitcoinPriceEndpoint {
         return priceService.getPrice();
     }
 
-    public void priceChange(@Observes @BitcoinPriceChange BigDecimal price) {
+    public void priceChange(@ObservesAsync @BitcoinPriceChange BigDecimal price) {
         broadcaster.broadcast(sse.newEvent(price.setScale(10, RoundingMode.HALF_DOWN).toString()));
     }
 
