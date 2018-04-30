@@ -33,8 +33,8 @@ public class BitcoinExchange {
     static {
         String host;
         try {
-            InetAddress.getByName("bitcoin.eap-demo.svc");
-            host = "http://bitcoin.eap-demo.svc:8080/game/bank/transact/";
+            InetAddress.getByName("bank.eap-demo.svc");
+            host = "http://bank.eap-demo.svc:8080/game/bank/transact/";
         } catch (UnknownHostException e) {
             host = "http://localhost:8080/game/bank/transact/";
         }
