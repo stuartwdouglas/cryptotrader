@@ -34,13 +34,14 @@ class App extends React.Component {
             //start updating the bank balance using server sent events
             var bankSrc = new EventSource("/game/bank/balance/watch/" + data.accountNo);
             bankSrc.addEventListener("balance", this.updateBankBalance);
+        })
+        .catch(function(e) {
+            alert("Failed to start game")
         });
 
         //start updating the bitcoin price using server sent events
         var evtSource = new EventSource("/game/bitcoin/price/watch");
         evtSource.onmessage = this.updateBtcPrice;
-
-
     }
 
     updateBtcPrice(e) {
