@@ -24,6 +24,7 @@ public class ProxyExtension implements ServletExtension {
     }
 
     private void tryProxyService(DeploymentInfo deploymentInfo, String service) {
+        System.out.println("Attempting to install proxy for " + service);
         try {
             InetAddress target = InetAddress.getByName(service + ".eap-demo.svc");
             deploymentInfo.addOuterHandlerChainWrapper(new HandlerWrapper() {
