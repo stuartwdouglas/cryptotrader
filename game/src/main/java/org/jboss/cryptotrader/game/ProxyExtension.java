@@ -27,13 +27,13 @@ public class ProxyExtension implements ServletExtension {
     private void tryProxyService(DeploymentInfo deploymentInfo, String service) {
         System.out.println("Attempting to install proxy for " + service);
         try {
-            InetAddress target = InetAddress.getByName(service + ".eap-demo.svc");
+            InetAddress target = InetAddress.getByName(service);
             deploymentInfo.addOuterHandlerChainWrapper(new HandlerWrapper() {
                 @Override
                 public HttpHandler wrap(HttpHandler httpHandler) {
                     try {
                         ProxyHandler proxyHandler = new ProxyHandler(new LoadBalancingProxyClient()
-                                .addHost(new URI("http://" + service + ".eap-demo.svc:8080")), httpHandler);
+                                .addHost(new URI("http://" + service + ":8080")), httpHandler);
                         return new PredicateHandler(Predicates.prefix("/" + service), new HttpHandler() {
                             @Override
                             public void handleRequest(HttpServerExchange exchange) throws Exception {
