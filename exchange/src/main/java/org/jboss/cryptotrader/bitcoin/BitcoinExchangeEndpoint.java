@@ -33,8 +33,8 @@ public class BitcoinExchangeEndpoint {
     static {
         String host;
         try {
-            InetAddress.getByName("bank");
-            host = "http://bank:8080/game/rest/bank/transact/";
+            InetAddress.getByName("game");
+            host = "http://game:8080/game/rest/bank/transact/";
         } catch (UnknownHostException e) {
             host = "http://localhost:8080/game/rest/bank/transact/";
         }

@@ -10,6 +10,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.jboss.cryptotrader.ExchangeService;
 
@@ -26,10 +27,13 @@ public class TradingEndpoint {
                 .target(ExchangeService.BITCOIN_TRADE)
                 .request(MediaType.TEXT_PLAIN)
                 .rx().post(Entity.entity(jsonObject, MediaType.APPLICATION_JSON_TYPE))
-                .thenAccept((r -> {
-                    String result = r.readEntity(String.class);
-                    response.resume(result);
-                }));
+                .whenComplete((r, e) -> {
+                    if (e != null || r.getStatus() != 200) {
+                        response.resume(Response.serverError().build());
+                    } else {
+                        response.resume(r.readEntity(String.class));
+                    }
+                });
     }
 
 }
