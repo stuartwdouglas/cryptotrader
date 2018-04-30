@@ -25,13 +25,13 @@ public class ProxyExtension implements ServletExtension {
 
     private void tryProxyService(DeploymentInfo deploymentInfo, String service) {
         try {
-            InetAddress target = InetAddress.getByName(service);
+            InetAddress target = InetAddress.getByName(service + ".eap-demo.svc");
             deploymentInfo.addOuterHandlerChainWrapper(new HandlerWrapper() {
                 @Override
                 public HttpHandler wrap(HttpHandler httpHandler) {
                     try {
                         ProxyHandler proxyHandler = new ProxyHandler(new LoadBalancingProxyClient()
-                                .addHost(new URI("http://" + service + ":8080")), httpHandler);
+                                .addHost(new URI("http://" + service + ".eap-demo.svc:8080")), httpHandler);
                         return new PredicateHandler(Predicates.prefix("/" + service), proxyHandler, httpHandler);
                     } catch (URISyntaxException e) {
                         throw new RuntimeException(e);
@@ -41,6 +41,7 @@ public class ProxyExtension implements ServletExtension {
 
         } catch (UnknownHostException e) {
             //this will happen when running outside openshift
+            System.out.println("Unable to resolve host " + service + " proxy setup will not be created");
         }
     }
 }
