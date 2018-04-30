@@ -211,7 +211,7 @@ class RunningGame extends React.Component {
               </div>
             </div>
             {this.props.processing ? (
-            <div className="alert alert-primary" role="alert" enabled={this.props.processing}>
+            <div className="alert alert-primary" role="alert" >
               Trading in progress, please wait...
             </div>) : ''}
           </div>
