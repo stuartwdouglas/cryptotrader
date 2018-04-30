@@ -38,6 +38,7 @@ public class ProxyExtension implements ServletExtension {
                             @Override
                             public void handleRequest(HttpServerExchange exchange) throws Exception {
                                 exchange.setRelativePath(exchange.getRequestPath());
+                                exchange.setResolvedPath("");
                                 proxyHandler.handleRequest(exchange);
                             }
                         }, httpHandler);
