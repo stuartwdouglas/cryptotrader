@@ -26,9 +26,11 @@ import java.net.UnknownHostException;
 class ExchangeService {
 
     private static final String BASE_URL;
-    public static final String BITCOIN_WATCH;
+    public static final String BITCOIN_PRICE_WATCH;
+    public static final String BITCOIN_PRICE;
     public static final String BITCOIN_TRADE;
     public static final String BITCOIN_NEWS;
+    public static final String BITCOIN_ALL_HOLDINGS;
 
     static {
         String host;
@@ -39,8 +41,10 @@ class ExchangeService {
             host = "http://localhost:8080/exchange";
         }
         BASE_URL = host;
-        BITCOIN_WATCH = BASE_URL + "/bitcoin/price/watch";
+        BITCOIN_PRICE_WATCH = BASE_URL + "/bitcoin/price/watch";
+        BITCOIN_PRICE = BASE_URL + "/bitcoin/price";
         BITCOIN_TRADE = BASE_URL + "/bitcoin/trade";
+        BITCOIN_ALL_HOLDINGS = BASE_URL + "/bitcoin/trade/holdings";
         BITCOIN_NEWS = BASE_URL + "/bitcoin/news";
     }
 }

@@ -158,6 +158,43 @@ class StartGame extends React.Component {
   }
 }
 
+class LeaderBoard extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {users:[]}
+        this.updateLeaderboard = this.updateLeaderboard.bind(this);
+    }
+
+    componentDidMount() {
+        var evtSource = new EventSource("/game/rest/leaderboard");
+        evtSource.onmessage = this.updateLeaderboard;
+    }
+
+    updateLeaderboard(e) {
+        var data = JSON.parse(e.data);
+        this.setState((prevState, props) => {
+        return { users: data }});
+    }
+
+    render() {
+        return (<div > <h3>Leaderboard</h3>
+        <table className="table">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Value</th>
+            </tr>
+          </thead>
+          <tbody>
+              {this.state.users.map((object, i) => <tr key={i}><td>{this.state.users[i].name}</td><td>{currency.format(this.state.users[i].value)}</td></tr>)}
+              </tbody>
+              </table></div>)
+    }
+
+}
+
+
 class RunningGame extends React.Component {
   constructor(props) {
       super(props);
@@ -197,6 +234,7 @@ class RunningGame extends React.Component {
               </div>
               <input type="text" className="form-control" value={currency.format(Number(this.props.balance) + (Number(this.props.btc) * Number(this.props.btcHoldings)))} readOnly="true"></input>
             </div>
+            <LeaderBoard/>
           </div>
           <div className="col-sm-4">
             <h3>Bitcoin Exchange</h3>

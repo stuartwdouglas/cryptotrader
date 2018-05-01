@@ -22,10 +22,11 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.sql.Time;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -39,6 +40,7 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.swing.text.NumberFormatter;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -120,7 +122,9 @@ public class BitcoinExchangeEndpoint {
 
         BigDecimal price = priceService.getPrice();
         BigDecimal amount = price.multiply(trade.getUnits(), MathContext.DECIMAL128);
-
+        if(trade.getUnits().abs().doubleValue() < 0.0001) {
+            throw new TradeException("Cannot trade in increments smaller than 0.0001");
+        }
 
         if (trade.getUnits().compareTo(BigDecimal.ZERO) > 0) {
             //this is a purchase
@@ -220,6 +224,17 @@ public class BitcoinExchangeEndpoint {
 
             }
         }
+    }
+
+    @GET
+    @Path("/holdings")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<BitcoinTradeData> allHoldings() {
+        List<BitcoinTradeData> ret = new ArrayList<>();
+        for (Map.Entry<UserKey, BigDecimal> e : holdings.entrySet()) {
+            ret.add(new BitcoinTradeData(e.getKey().name, e.getKey().accountNo, e.getValue()));
+        }
+        return ret;
     }
 
     private static final class UserKey {

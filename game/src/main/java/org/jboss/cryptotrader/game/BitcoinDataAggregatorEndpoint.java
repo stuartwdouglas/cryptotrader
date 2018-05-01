@@ -101,7 +101,7 @@ public class BitcoinDataAggregatorEndpoint {
         //sign up for price notifications
         persistentSseClientFactory.createPersistentConnection(inboundSseEvent -> {
             bitcoinPrice = new BigDecimal(inboundSseEvent.readData());
-        }, ExchangeService.BITCOIN_WATCH);
+        }, ExchangeService.BITCOIN_PRICE_WATCH);
 
         //sign up for news notifications
         persistentSseClientFactory.createPersistentConnection(inboundSseEvent -> {
@@ -141,6 +141,13 @@ public class BitcoinDataAggregatorEndpoint {
     @GET
     public void watch(@Context SseEventSink sink) {
         broadcaster.register(sink);
+
+        String initial = Json.createObjectBuilder()
+                .add("bitcoin", bitcoinPrice)
+                .add("news", Json.createArrayBuilder())
+                .build()
+                .toString();
+        sink.send(sse.newEvent(initial));
     }
 
 }
