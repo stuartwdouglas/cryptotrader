@@ -6,7 +6,6 @@ var currency = new Intl.NumberFormat('en-US', {
   // and is usually already 2
 });
 
-
 class App extends React.Component {
 
     constructor(props) {
@@ -133,6 +132,7 @@ class StartGame extends React.Component {
   }
 
   startGame(e) {
+        e.preventDefault();
       this.props.start(this.state.name)
   }
 
@@ -146,7 +146,7 @@ class StartGame extends React.Component {
                       <input type="text" className="form-control" id="nameInput" aria-describedby="nameHelp" placeholder="Enter your name" value={this.state.name} onChange={this.handleChange} />
                       <small id="nameHelp" className="form-text text-muted">Please enter your name to begin</small>
                   </div>
-                  <button type="button" className="btn btn-primary" onClick={this.startGame}>Start Game</button>
+                  <button type="submit" className="btn btn-primary" onClick={this.startGame}>Start Game</button>
               </form>
           </div>
       </div>);
