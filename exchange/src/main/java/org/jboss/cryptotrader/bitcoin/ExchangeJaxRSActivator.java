@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.jboss.cryptotrader;
+package org.jboss.cryptotrader.bitcoin;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
 /**
- * Activates JAX-RS
+ * Activates JAX-RS for the application
  */
-@ApplicationPath("/rest")
-public class JaxRSActivator extends Application {
+@ApplicationPath("/")
+public class ExchangeJaxRSActivator extends Application {
 }

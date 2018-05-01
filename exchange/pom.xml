@@ -7,13 +7,20 @@
     <groupId>org.jboss.cryptotrader</groupId>
     <artifactId>exchange</artifactId>
     <version>1.0.0.Alpha1</version>
+    <properties>
+        <jboss-jaxrs-api_2.1_spec.version>1.0.0.Final</jboss-jaxrs-api_2.1_spec.version>
+        <jboss-servlet-api_4.0_spec.version>1.0.0.Final</jboss-servlet-api_4.0_spec.version>
+        <cdi-api.version>2.0</cdi-api.version>
+        <jboss-concurrency-api_1.0_spec.version>1.0.2.Final</jboss-concurrency-api_1.0_spec.version>
+        <javax.json.bind-api.version>1.0</javax.json.bind-api.version>
+    </properties>
     <packaging>war</packaging>
 
     <dependencies>
         <dependency>
             <groupId>org.jboss.spec.javax.ws.rs</groupId>
             <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
-            <version>1.0.0.Final</version>
+            <version>${jboss-jaxrs-api_2.1_spec.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -24,25 +31,25 @@
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
-            <version>2.0</version>
+            <version>${cdi-api.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jboss.spec.javax.enterprise.concurrent</groupId>
             <artifactId>jboss-concurrency-api_1.0_spec</artifactId>
-            <version>1.0.2.Final</version>
+            <version>${jboss-concurrency-api_1.0_spec.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jboss.spec.javax.servlet</groupId>
             <artifactId>jboss-servlet-api_4.0_spec</artifactId>
-            <version>1.0.0.Final</version>
+            <version>${jboss-servlet-api_4.0_spec.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.json.bind</groupId>
             <artifactId>javax.json.bind-api</artifactId>
-            <version>1.0</version>
+            <version>${javax.json.bind-api.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

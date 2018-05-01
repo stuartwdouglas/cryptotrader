@@ -1,3 +1,20 @@
+/*
+ * JBoss, Home of Professional Open Source.
+ * Copyright 2018 Red Hat, Inc., and individual contributors
+ * as indicated by the @author tags.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.jboss.cryptotrader.bitcoin;
 
 import java.math.BigDecimal;
@@ -9,9 +26,27 @@ import javax.inject.Inject;
 
 /**
  * An application scoped bean that manages the bitcoin price
+ *
+ * In general the price will trend in a certain direction for a random period
+ * of time, then pick a new trend direction. Moderate trends are more likely
+ * than extreme events.
+ *
+ * At some time after a trend has started a news event may be created to give
+ * the player an idea of the direction of the current trend.
+ *
  */
 @ApplicationScoped
 public class BitcoinPriceService {
+
+    /**
+     * We don't allow the price to get this high, if we hit 20k there will be a big crash
+     */
+    private static final BigDecimal CRASH_CEILING = new BigDecimal("20000");
+
+    /**
+     * Our price generator
+     */
+    private final Random random = new Random();
 
     /**
      * This is the general trend of the market. If it is positive the market
@@ -25,16 +60,17 @@ public class BitcoinPriceService {
     private int ticksTillConditionsChange = 5;
 
     /**
-     * Our price generator
+     * The current price
      */
-    private final Random random = new Random();
+    private volatile BigDecimal price = BigDecimal.ONE;
 
-    private volatile BigDecimal price = BigDecimal.ONE; //we start out at one
-
-    private static final BigDecimal CRASH_CEILING = new BigDecimal("20000");
-
-
+    /**
+     * The potential news message for the current trend
+     */
     private String newsMessage;
+    /**
+     * The number of ticks before the news message is sent
+     */
     private int messageTicks;
 
     @Inject
@@ -83,14 +119,15 @@ public class BitcoinPriceService {
         }
         if(newsMessage != null) {
             if(--messageTicks == 0) {
+                //send out a message that gives the player a hint as to the current direction
                 newsEvents.fireAsync(newsMessage);
                 newsMessage = null;
             }
         }
 
-        double change = random.nextDouble() * 0.02 - 0.01;
-        price = price.add(price.multiply(marketDirection.add(BigDecimal.valueOf(change))));
-        priceChangeEvent.fireAsync(price);
+        double change = random.nextDouble() * 0.02 - 0.01; //the random part of the price change
+        price = price.add(price.multiply(marketDirection.add(BigDecimal.valueOf(change)))); //calculate a new price
+        priceChangeEvent.fireAsync(price); //notify the world of the new price
     }
 
     public BigDecimal getPrice() {

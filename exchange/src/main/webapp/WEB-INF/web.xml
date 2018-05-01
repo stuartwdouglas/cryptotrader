@@ -3,5 +3,9 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
+    <!--
+        The default context path is new in Servlet 4.0, it allows you to specify the
+        path the application will be mapped to without modifying war file name
+    -->
     <default-context-path>/exchange</default-context-path>
 </web-app>

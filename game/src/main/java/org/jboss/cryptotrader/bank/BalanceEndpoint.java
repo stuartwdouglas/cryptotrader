@@ -1,17 +1,28 @@
+/*
+ * JBoss, Home of Professional Open Source.
+ * Copyright 2018 Red Hat, Inc., and individual contributors
+ * as indicated by the @author tags.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.jboss.cryptotrader.bank;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -31,9 +42,6 @@ public class BalanceEndpoint {
     @Context
     private Sse sse;
 
-    @Inject
-    private AccountManager manager;
-
     private final Map<String, BroadcastHolder> broadcasters = new HashMap<>();
 
     /**
@@ -49,6 +57,8 @@ public class BalanceEndpoint {
     @Path("/watch/{accountNo}")
     @GET
     public void watch(@Context SseEventSink sink, @PathParam("accountNo") String accountNo) {
+        //as we only want to watch one account number, we need to create a broadcaster per account
+        //these broadcasters are stored in a map
         synchronized (broadcasters) {
             BroadcastHolder bc = broadcasters.get(accountNo);
             if (bc == null) {
@@ -63,35 +73,21 @@ public class BalanceEndpoint {
                 bc.usageCount++;
             }
             bc.broadcaster.register(sink);
-
         }
-    }
-
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/{accountNo}")
-    @POST
-    public BigDecimal accountDetails(@PathParam("accountNo") String accountNo, JsonObject object) {
-        String client = object.getString("name");
-        BigDecimal balance = manager.getBalance(accountNo, client);
-        return (BigDecimal) Json.createObjectBuilder()
-                .add("accountNo", accountNo)
-                .add("name", client)
-                .add("balance", balance)
-                .build();
     }
 
     /**
      * Method that is notified when an account balance changes. If there is an SSE event broadcaster
      * registered
      *
-     * @param event
+     * @param event the bank transaction
      */
     public void transactionEvent(@Observes TransactionEvent event) {
         BroadcastHolder bc;
         synchronized (broadcasters) {
             bc = broadcasters.get(event.getAccount());
         }
+        //notify any watchers of the account
         if (bc != null) {
             bc.broadcaster.broadcast(sse.newEvent("balance", event.getBalance().toString()));
         }
