@@ -46,7 +46,7 @@ or using the JAX-RS reactive client.
 
 The basic architecture diagram is shown below:
 
- 
+![Architecture Diagram](https://github.com/stuartwdouglas/cryptotrader/raw/master/diagram.png) 
 
 
 ## Front End
