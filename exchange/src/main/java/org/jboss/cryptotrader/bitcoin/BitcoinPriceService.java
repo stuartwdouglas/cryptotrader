@@ -101,13 +101,13 @@ public class BitcoinPriceService {
                 //BEAR MARKET
                 marketDirection = BigDecimal.valueOf((random.nextDouble() * -0.03));
                 ticksTillConditionsChange = random.nextInt(20) + 15;
-                newsMessage = "Bitcoin seems to be in a bear market at the moment";
+                newsMessage = "Bitcoin seems to be experiencing a bear market at the moment";
                 messageTicks = random.nextInt(15) + 5;
             } else {
                 //BULL MARKET
                 marketDirection = BigDecimal.valueOf(random.nextDouble() * 0.05);
                 ticksTillConditionsChange = random.nextInt(20) + 15;
-                newsMessage = "Bitcoin seems to be in a bull market at the moment";
+                newsMessage = "Bitcoin seems to be experiencing a bull market at the moment";
                 messageTicks = random.nextInt(15) + 5;
             }
         } else if(price.compareTo(CRASH_CEILING) > 0) {
