@@ -10,7 +10,7 @@ class App extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state={name:'', running:false, balance: 0, btc: 1, btcHoldings: 0, processing: false, news: []};
+        this.state={name:'', running:false, balance: 0, btc: 1, btcHoldings: 0, processing: false, news: [], errorMessage: ''};
         this.startGame = this.startGame.bind(this);
         this.restartGame = this.restartGame.bind(this);
         this.updateBitcoinData = this.updateBitcoinData.bind(this);
@@ -75,12 +75,17 @@ class App extends React.Component {
                 body: JSON.stringify({name: this.state.name, bankAccountNo: this.state.accountNo, units: units})
             }).then((response) => {
                     this.setState({processing: false})
-                    if (response.status !== 200) {
+                    if(response.status == 400) {
+                        response.text().then((data) => {
+                            this.setState({errorMessage : data})
+                        })
+                      return;
+                    } else if (response.status !== 200) {
                       alert("Failed to process trade")
                       return;
                     }
                     response.text().then((data) => {
-                      this.setState({btcHoldings : data})
+                      this.setState({btcHoldings : data, errorMessage: ''})
                     });
                   }
                 )
@@ -98,7 +103,7 @@ class App extends React.Component {
     }
 
     render() {
-        const pageBody = this.state.running ? <RunningGame name={this.state.name} accountNo={this.state.accountNo} balance={this.state.balance} btc={this.state.btc} tradeBtc={this.tradeBtc} btcHoldings={this.state.btcHoldings} news={this.state.news} processing={this.state.processing}/> : <StartGame start={this.startGame}/>
+        const pageBody = this.state.running ? <RunningGame name={this.state.name} accountNo={this.state.accountNo} balance={this.state.balance} btc={this.state.btc} tradeBtc={this.tradeBtc} btcHoldings={this.state.btcHoldings} news={this.state.news} processing={this.state.processing} errorMessage={this.state.errorMessage}/> : <StartGame start={this.startGame}/>
 
         return (
           <div className="container-fluid">
@@ -220,6 +225,11 @@ class RunningGame extends React.Component {
                 <button className="btn btn-outline-danger" type="button" onClick={this.sell} disabled={this.props.processing}>Sell</button>
               </div>
             </div>
+
+            {this.props.errorMessage.length > 0 ? (
+            <div className="alert alert-danger" role="alert" >
+              {this.props.errorMessage}
+            </div>) : ''}
             {this.props.processing ? (
             <div className="alert alert-primary" role="alert" >
               Trading in progress, please wait...

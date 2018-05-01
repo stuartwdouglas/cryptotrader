@@ -141,7 +141,7 @@ public class BitcoinExchangeEndpoint {
                         //check if the TX failed, if so we just respond with a server error
                         //ideally we would include this in the JSON response, but we are keeping things simple
                         if (bankResponse.getStatus() >= 300) {
-                            response.resume(new RuntimeException("Unable to get funds from the bank to purchase Bitcoin"));
+                            response.resume(new TradeException("Unable to get funds from the bank to purchase Bitcoin, check your bank balance"));
                             return;
                         }
                         //bitcoin trades can take a while, we simulate this by scheduling a task to run later
@@ -180,12 +180,12 @@ public class BitcoinExchangeEndpoint {
                 BigDecimal currentHoldings = holdings.get(key);
                 if (currentHoldings == null) {
                     //they don't hold anything
-                    response.resume(new RuntimeException("You don't hold any Bitcoin"));
+                    response.resume(new TradeException("You don't hold any Bitcoin"));
                     return;
                 }
                 BigDecimal newHoldings = currentHoldings.add(trade.getUnits());
                 if (newHoldings.compareTo(BigDecimal.ZERO) < 0) {
-                    response.resume(new RuntimeException("You don't hold enough Bitcoin to complete the transaction"));
+                    response.resume(new TradeException("You don't hold enough Bitcoin to complete the transaction"));
                     return;
                 }
                 holdings.put(key, newHoldings);

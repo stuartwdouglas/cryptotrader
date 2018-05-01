@@ -22,7 +22,10 @@ import java.math.BigDecimal;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import javax.json.JsonNumber;
 import javax.json.JsonObject;
+import javax.json.JsonString;
+import javax.json.JsonValue;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -48,7 +51,13 @@ public class BankTransactEndpoint {
     @Consumes(MediaType.APPLICATION_JSON)
     public void transact(JsonObject jsonObject, @PathParam("accountNo") String accountNo) {
         String clientName = jsonObject.getString("name");
-        BigDecimal amount = jsonObject.getJsonNumber("amount").bigDecimalValue();
+        JsonValue amt = jsonObject.get("amount");
+        BigDecimal amount;
+        if(amt.getValueType() == JsonValue.ValueType.NUMBER) {
+            amount = ((JsonNumber)amt).bigDecimalValue();
+        } else {
+            amount = new BigDecimal(((JsonString)amt).getString());
+        }
         BigDecimal newBalance = accountManager.transact(accountNo, clientName, amount);
         event.fire(new TransactionEvent(accountNo, clientName, newBalance));
     }

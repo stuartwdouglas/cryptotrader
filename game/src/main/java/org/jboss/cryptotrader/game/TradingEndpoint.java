@@ -50,13 +50,17 @@ public class TradingEndpoint {
                 .post(Entity.entity(jsonObject, MediaType.APPLICATION_JSON_TYPE))
                 .whenComplete((r, e) -> {
                     //this callback is invoked when the request is complete
-                    if (e != null || r.getStatus() != 200) {
+                    if (e != null) {
                         response.resume(Response.serverError().build());
-                    } else {
+                    } else if(r.getStatus() == Response.Status.BAD_REQUEST.getStatusCode()) {
+                        response.resume(Response.status(Response.Status.BAD_REQUEST).entity(r.readEntity(String.class)).build());
+                    } else if(r.getStatus() == Response.Status.OK.getStatusCode()) {
                         //the trading endpoint responds in JSON, but we
                         //just want to respond in plain text
                         JsonObject json = r.readEntity(JsonObject.class);
                         response.resume(json.getJsonNumber("units"));
+                    } else {
+                        response.resume(Response.serverError().build());
                     }
                 });
     }
