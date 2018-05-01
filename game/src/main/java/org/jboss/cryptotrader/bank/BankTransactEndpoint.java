@@ -14,7 +14,7 @@ import javax.ws.rs.core.MediaType;
 
 @Path("/bank/transact")
 @Dependent
-public class TransactEndpoint {
+public class BankTransactEndpoint {
 
     @Inject
     private AccountManager accountManager;

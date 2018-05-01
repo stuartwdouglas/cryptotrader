@@ -2,22 +2,27 @@ package org.jboss.cryptotrader.bitcoin;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import javax.swing.text.NumberFormatter;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -44,7 +49,7 @@ public class BitcoinExchangeEndpoint {
     /**
      * We just track holdings in a map keyed by client name
      */
-    private final Map<String, BigDecimal> holdings = new HashMap<>();
+    private final Map<UserKey, BigDecimal> holdings = new HashMap<>();
 
     @Inject
     private BitcoinPriceService priceService;
@@ -52,17 +57,15 @@ public class BitcoinExchangeEndpoint {
     @Resource
     private ManagedScheduledExecutorService managedScheduledExecutorService;
 
-    @GET
-    @Produces({MediaType.TEXT_PLAIN})
-    @Path("/holdings/{name}")
-    public BigDecimal holdings(@PathParam("name") String name) {
-        return holdings.get(name);
-    }
+    @Inject
+    @BitcoinNews
+    private Event<String> newsEvent;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces({MediaType.TEXT_PLAIN})
-    public BigDecimal trade(BitcoinTrade trade) {
+    @Produces({MediaType.APPLICATION_JSON})
+    public BitcoinTradeData trade(BitcoinTradeData trade) throws ParseException {
+        NumberFormatter currenyFormatter = new NumberFormatter(NumberFormat.getCurrencyInstance(Locale.US));
         BigDecimal price = priceService.getPrice();
         BigDecimal amount = price.multiply(trade.getUnits(), MathContext.DECIMAL128);
         if (trade.getUnits().compareTo(BigDecimal.ZERO) > 0) {
@@ -90,26 +93,29 @@ public class BitcoinExchangeEndpoint {
                 throw new RuntimeException(e);
             }
             synchronized (holdings) {
-                BigDecimal currentHoldings = holdings.get(trade.getName());
+                UserKey key = new UserKey(trade.getName(), trade.getBankAccountNo());
+                BigDecimal currentHoldings = holdings.get(key);
                 if (currentHoldings == null) {
                     currentHoldings = BigDecimal.ZERO;
                 }
                 BigDecimal newHoldings = currentHoldings.add(trade.getUnits());
-                holdings.put(trade.getName(), newHoldings);
-                return newHoldings;
+                holdings.put(key, newHoldings);
+                newsEvent.fireAsync(trade.getName() + " just purchased " + trade.getUnits().setScale(3, RoundingMode.HALF_UP).toString() + " Bitcoin for " + currenyFormatter.valueToString(amount.abs()));
+                return new BitcoinTradeData(trade.getName(), trade.getBankAccountNo(), newHoldings);
             }
         } else {
 
             synchronized (holdings) {
-                BigDecimal currentHoldings = holdings.get(trade.getName());
+                UserKey key = new UserKey(trade.getName(), trade.getBankAccountNo());
+                BigDecimal currentHoldings = holdings.get(key);
                 if (currentHoldings == null) {
-                    throw new RuntimeException("You don't hold any bitcoin");
+                    throw new RuntimeException("You don't hold any Bitcoin");
                 }
                 BigDecimal newHoldings = currentHoldings.add(trade.getUnits());
                 if (newHoldings.compareTo(BigDecimal.ZERO) < 0) {
-                    throw new RuntimeException("You don't hold enough bitcoin to complete the transaction");
+                    throw new RuntimeException("You don't hold enough Bitcoin to complete the transaction");
                 }
-                holdings.put(trade.getName(), newHoldings);
+                holdings.put(key, newHoldings);
                 //it takes a while for the money to actually come through
                 //we process this async in the background though
                 managedScheduledExecutorService.schedule(() -> {
@@ -126,9 +132,35 @@ public class BitcoinExchangeEndpoint {
                     }
 
                 }, new Random().nextInt(5) + 5, TimeUnit.SECONDS);
-                return newHoldings;
+                newsEvent.fireAsync(trade.getName() + " just sold " + trade.getUnits().setScale(3, RoundingMode.HALF_UP).toString() + " Bitcoin for " + currenyFormatter.valueToString(amount.abs()));
+                return new BitcoinTradeData(trade.getName(), trade.getBankAccountNo(), newHoldings);
 
             }
+        }
+    }
+
+    private static final class UserKey {
+        private final String name;
+        private final String accountNo;
+
+        private UserKey(String name, String accountNo) {
+            this.name = name;
+            this.accountNo = accountNo;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            UserKey userKey = (UserKey) o;
+            return Objects.equals(name, userKey.name) &&
+                    Objects.equals(accountNo, userKey.accountNo);
+        }
+
+        @Override
+        public int hashCode() {
+
+            return Objects.hash(name, accountNo);
         }
     }
 

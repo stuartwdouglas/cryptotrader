@@ -5,11 +5,20 @@ import java.math.BigDecimal;
 import javax.json.bind.annotation.JsonbAnnotation;
 
 @JsonbAnnotation
-public class BitcoinTrade {
+public class BitcoinTradeData {
 
     private String name;
     private String bankAccountNo;
     private BigDecimal units;
+
+    public BitcoinTradeData(String name, String bankAccountNo, BigDecimal units) {
+        this.name = name;
+        this.bankAccountNo = bankAccountNo;
+        this.units = units;
+    }
+
+    public BitcoinTradeData() {
+    }
 
     public String getName() {
         return name;

@@ -8,6 +8,7 @@ public class ExchangeService {
     private static final String BASE_URL;
     public static final String BITCOIN_WATCH;
     public static final String BITCOIN_TRADE;
+    public static final String BITCOIN_NEWS;
 
     static {
         String host;
@@ -20,5 +21,6 @@ public class ExchangeService {
         BASE_URL = host;
         BITCOIN_WATCH = BASE_URL + "/bitcoin/price/watch";
         BITCOIN_TRADE = BASE_URL + "/bitcoin/trade";
+        BITCOIN_NEWS = BASE_URL + "/bitcoin/news";
     }
 }

@@ -11,10 +11,10 @@ class App extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state={name:'', running:false, balance: 0, btc: 1, btcHoldings: 0, processing: false};
+        this.state={name:'', running:false, balance: 0, btc: 1, btcHoldings: 0, processing: false, news: []};
         this.startGame = this.startGame.bind(this);
         this.restartGame = this.restartGame.bind(this);
-        this.updateExchangePricing = this.updateExchangePricing.bind(this);
+        this.updateBitcoinData = this.updateBitcoinData.bind(this);
         this.updateBankBalance = this.updateBankBalance.bind(this);
         this.tradeBtc = this.tradeBtc.bind(this);
     }
@@ -40,13 +40,23 @@ class App extends React.Component {
         });
 
         //start updating the bitcoin price using server sent events
-        var evtSource = new EventSource("/game/rest/price/watch");
-        evtSource.onmessage = this.updateExchangePricing;
+        var evtSource = new EventSource("/game/rest/bitcoin/data/watch");
+        evtSource.onmessage = this.updateBitcoinData;
     }
 
-    updateExchangePricing(e) {
+    updateBitcoinData(e) {
         var data = JSON.parse(e.data);
-        this.setState((prevState, props) => ({ btc: data.bitcoin }));
+        this.setState((prevState, props) => {
+        var newCount = data.news.length + prevState.news.length;
+        var newNews = prevState.news.slice(0);
+        for(var i = 0; i < data.news.length; ++i) {
+            newNews.unshift(data.news[i]);
+        }
+        while(newNews.length > 5) {
+            newNews.pop();
+        }
+
+        return { btc: data.bitcoin, news: newNews }});
     }
 
     updateBankBalance(e) {
@@ -89,7 +99,7 @@ class App extends React.Component {
     }
 
     render() {
-        const pageBody = this.state.running ? <RunningGame name={this.state.name} accountNo={this.state.accountNo} balance={this.state.balance} btc={this.state.btc} tradeBtc={this.tradeBtc} btcHoldings={this.state.btcHoldings} processing={this.state.processing}/> : <StartGame start={this.startGame}/>
+        const pageBody = this.state.running ? <RunningGame name={this.state.name} accountNo={this.state.accountNo} balance={this.state.balance} btc={this.state.btc} tradeBtc={this.tradeBtc} btcHoldings={this.state.btcHoldings} news={this.state.news} processing={this.state.processing}/> : <StartGame start={this.startGame}/>
 
         return (
           <div className="container-fluid">
@@ -184,7 +194,7 @@ class RunningGame extends React.Component {
             </div>
           </div>
           <div className="col-sm-4">
-            <h3>Bitcoin</h3>
+            <h3>Bitcoin Exchange</h3>
             <div className="input-group mb-3">
               <div className="input-group-prepend">
                 <span className="input-group-text">Price:</span>
@@ -217,8 +227,8 @@ class RunningGame extends React.Component {
           </div>
 
           <div className="col-sm-4">
-            <h3>Ethereum</h3>
-            TODO
+            <h3>News</h3>
+            { this.props.news.map((object, i) => <div className="alert alert-secondary" role="alert" key={i} >{this.props.news[i]}</div>)}
           </div>
       </div>
             </div>);
