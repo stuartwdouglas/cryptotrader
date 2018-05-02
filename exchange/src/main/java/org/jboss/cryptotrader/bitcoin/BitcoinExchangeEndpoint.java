@@ -65,6 +65,8 @@ public class BitcoinExchangeEndpoint {
 
     private static final String TRANSACT;
 
+    private static final String SERVICE_NAME = System.getProperty("cryptotrader.game", "game");
+
     /**
      * The URI we use to connect to the bank varies depending on if we are running in openshift or not.
      *
@@ -73,8 +75,8 @@ public class BitcoinExchangeEndpoint {
     static {
         String host;
         try {
-            InetAddress.getByName("game");
-            host = "http://game:8080/game/rest/bank/transact/";
+            InetAddress.getByName(SERVICE_NAME);
+            host = "http://" + SERVICE_NAME + ":8080/game/rest/bank/transact/";
         } catch (UnknownHostException e) {
             host = "http://localhost:8080/game/rest/bank/transact/";
         }
