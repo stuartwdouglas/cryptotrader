@@ -35,8 +35,8 @@ class ExchangeService {
     static {
         String host;
         try {
-            InetAddress.getByName("exchange");
-            host = "http://exchange:8080/exchange";
+            InetAddress.getByName("exchange.cryptotrader.svc");
+            host = "http://exchange.cryptotrader.svc:8080/exchange";
         } catch (UnknownHostException e) {
             host = "http://localhost:8080/exchange";
         }
