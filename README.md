@@ -67,7 +67,9 @@ This will deploy on the EAP CD 12 image.
 Note that if you are using openshift starter this will use up most of your resource allocation,
 so if you have other applications running then these commands will likely fail.
 
-```oc new-project cryptotrader
+```
+
+oc new-project cryptotrader
 
 for resource in \
   eap-cd-image-stream.json \
