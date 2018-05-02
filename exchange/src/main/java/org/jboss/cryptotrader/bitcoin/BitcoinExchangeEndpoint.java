@@ -75,7 +75,8 @@ public class BitcoinExchangeEndpoint {
     static {
         String host;
         try {
-            InetAddress.getByName(SERVICE_NAME);
+            InetAddress address = InetAddress.getByName(SERVICE_NAME);
+            System.out.println("BitcoinExchangeEndpoint: Using openshift services, resolved IP: " + address);
             host = "http://" + SERVICE_NAME + ":8080/game/rest/bank/transact/";
         } catch (UnknownHostException e) {
             host = "http://localhost:8080/game/rest/bank/transact/";
