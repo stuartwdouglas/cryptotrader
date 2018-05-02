@@ -25,6 +25,8 @@ import java.net.UnknownHostException;
  */
 class ExchangeService {
 
+    private static final String SERVICE_NAME = System.getProperty("cryptotrader.exchange", "exchange");
+
     private static final String BASE_URL;
     public static final String BITCOIN_PRICE_WATCH;
     public static final String BITCOIN_PRICE;
@@ -35,8 +37,8 @@ class ExchangeService {
     static {
         String host;
         try {
-            InetAddress.getByName("exchange.cryptotrader.svc");
-            host = "http://exchange.cryptotrader.svc:8080/exchange";
+            InetAddress.getByName(SERVICE_NAME);
+            host = "http://" + SERVICE_NAME + ":8080/exchange";
         } catch (UnknownHostException e) {
             host = "http://localhost:8080/exchange";
         }
