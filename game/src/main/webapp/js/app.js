@@ -116,6 +116,9 @@ class App extends React.Component {
 
 function Header(props) {
   return (<nav className="navbar navbar-light bg-light">
+      <a className="navbar-brand" href="https://www.openshift.com/" title="Powered by OpenShift Online">
+        <img alt="Powered by OpenShift Online" src="https://www.openshift.com/images/logos/powered_by_openshift.png"></img>
+      </a>
       <a className="navbar-brand">Crypto Trader</a>
       <form className="form-inline">
           <button className="btn btn-outline-success my-2 my-sm-0" onClick={props.restart} type="button" >Restart Game</button>
