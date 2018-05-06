@@ -25,6 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -52,6 +53,7 @@ public class PersistentSseClientFactory {
 
     private Client client;
 
+    private static final Logger log = Logger.getLogger(PersistentSseClientFactory.class.getName());
 
     @PostConstruct
     private void setup() {
@@ -76,6 +78,7 @@ public class PersistentSseClientFactory {
      * @return A closeable that can be used to close the client
      */
     public Closeable createPersistentConnection(Consumer<InboundSseEvent> messageHandler, String target) {
+        log.info("Creating persistent SSE connection to " + target);
         Connection c = new Connection(messageHandler, target);
         connections.add(c);
         c.doConnect();
@@ -106,6 +109,7 @@ public class PersistentSseClientFactory {
             }
             handle = null;
             reconnectScheduled = false;
+            log.info("Attempting to connect to " + target);
 
             //create the SSE connection object
             source = SseEventSource.target(client.
@@ -113,6 +117,7 @@ public class PersistentSseClientFactory {
             //register the message and error handlers
             source.register(messageHandler, throwable -> {
                 try {
+                    log.info("Connection to " + target + " closed, attempting reconnect");
                     source.close();
                 } finally {
                     attemptReconnect();
@@ -128,6 +133,7 @@ public class PersistentSseClientFactory {
             if (closed || reconnectScheduled) {
                 return;
             }
+            log.info("Scheduling reconnect to " + target);
             reconnectScheduled = true;
             handle = scheduledExecutorService.schedule(this::doConnect, 2, TimeUnit.SECONDS);
         }
@@ -137,6 +143,7 @@ public class PersistentSseClientFactory {
          */
         @Override
         public synchronized void close() {
+            log.info("Closed connection to " + target);
             closed = true;
             if (source != null) {
                 source.close();
