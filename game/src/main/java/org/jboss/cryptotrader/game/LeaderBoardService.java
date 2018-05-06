@@ -30,22 +30,16 @@ import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.sse.Sse;
-import javax.ws.rs.sse.SseBroadcaster;
-import javax.ws.rs.sse.SseEventSink;
 
 import org.jboss.cryptotrader.bank.AccountManager;
 
@@ -54,39 +48,36 @@ import org.jboss.cryptotrader.bank.AccountManager;
  */
 @Singleton
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
-@Path("/leaderboard")
-public class LeaderBoardEndpoint {
+public class LeaderBoardService {
 
 
     private static final String NAME = "name";
     private static final String BANK_ACCOUNT_NO = "bankAccountNo";
     private static final String UNITS = "units";
     private static final String VALUE = "value";
-    @Context
-    private Sse sse;
 
     @Inject
     private AccountManager accountManager;
 
-    /**
-     * broadcaster used to notify clients of events
-     */
-    private SseBroadcaster broadcaster;
 
     /**
      * cached last leaderboard that we send on connect
      */
     private volatile String lastLeaderboard;
 
+    private Client client;
+
+    @Inject
+    private Event<BroadcastEvent> broadcast;
+
     @PostConstruct
     private void setup() {
-        //set up the SSE broadcaster
-        broadcaster = sse.newBroadcaster();
+        client = ClientBuilder.newClient();
     }
 
     @PreDestroy
     private void close() {
-        broadcaster.close();
+        client.close();
     }
 
     @Schedule(second = "1,15,30,45", hour = "*", minute = "*")
@@ -94,13 +85,13 @@ public class LeaderBoardEndpoint {
         //we need to get the holdings and the price
         //we make two different requests and use the thenCombine method to
         //await both results
-        CompletionStage<Response> holdings = ClientBuilder.newClient()
+        CompletionStage<Response> holdings = client
                 .target(ExchangeService.BITCOIN_ALL_HOLDINGS)
                 .request()
                 .rx()
                 .get();
 
-        ClientBuilder.newClient()
+        client
                 .target(ExchangeService.BITCOIN_PRICE)
                 .request()
                 .rx()
@@ -134,20 +125,10 @@ public class LeaderBoardEndpoint {
                                 .add(NAME, user.getName())
                                 .add(VALUE, user.getNetWorth()));
                     }
-                    broadcaster.broadcast(sse.newEvent(lastLeaderboard = result.build().toString()));
-
+                    broadcast.fireAsync(new BroadcastEvent("leaderboard", lastLeaderboard = result.build().toString()));
                 });
 
 
-    }
-
-    @Produces(MediaType.SERVER_SENT_EVENTS)
-    @GET
-    public void watch(@Context SseEventSink sink) {
-        broadcaster.register(sink);
-        if(lastLeaderboard != null) {
-            sink.send(sse.newEvent(lastLeaderboard));
-        }
     }
 
     private class User implements Comparable<User> {

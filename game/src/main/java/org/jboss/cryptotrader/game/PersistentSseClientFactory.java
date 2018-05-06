@@ -26,10 +26,12 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.enterprise.context.ApplicationScoped;
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.sse.InboundSseEvent;
 import javax.ws.rs.sse.SseEventSource;
@@ -48,6 +50,25 @@ public class PersistentSseClientFactory {
      */
     private final List<Connection> connections = new CopyOnWriteArrayList<>();
 
+    private Client client;
+
+
+    @PostConstruct
+    private void setup() {
+        client = ClientBuilder.newClient();
+    }
+
+    /**
+     * close all clients when the application is undeployed
+     */
+    @PreDestroy
+    void stop() {
+        for(Connection c : new ArrayList<>(connections)) {
+            c.close();
+        }
+        client.close();
+    }
+
     /**
      * Creates a new SSE client. This client will autoamtically reconnect if there is a problem
      * @param messageHandler The message handler
@@ -59,16 +80,6 @@ public class PersistentSseClientFactory {
         connections.add(c);
         c.doConnect();
         return c;
-    }
-
-    /**
-     * close all clients when the application is undeployed
-     */
-    @PreDestroy
-    void stop() {
-        for(Connection c : new ArrayList<>(connections)) {
-            c.close();
-        }
     }
 
     /**
@@ -97,7 +108,7 @@ public class PersistentSseClientFactory {
             reconnectScheduled = false;
 
             //create the SSE connection object
-            source = SseEventSource.target(ClientBuilder.newClient().
+            source = SseEventSource.target(client.
                     target(target)).build();
             //register the message and error handlers
             source.register(messageHandler, throwable -> {

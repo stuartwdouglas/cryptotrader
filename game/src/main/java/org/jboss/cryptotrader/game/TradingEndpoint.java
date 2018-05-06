@@ -17,11 +17,14 @@
 
 package org.jboss.cryptotrader.game;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.json.JsonObject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.container.AsyncResponse;
@@ -37,13 +40,25 @@ import javax.ws.rs.core.Response;
 @Path("/trade")
 public class TradingEndpoint {
 
+    private Client client;
+
+    @PostConstruct
+    private void setup() {
+        client = ClientBuilder.newClient();
+    }
+
+    @PreDestroy
+    private void close() {
+        client.close();
+    }
+
     @Path("/bitcoin")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces({MediaType.TEXT_PLAIN})
     public void bitcoin(@Suspended AsyncResponse response, JsonObject jsonObject) {
         //connect to the trading service
-        ClientBuilder.newClient()
+        client
                 .target(ExchangeService.BITCOIN_TRADE)
                 .request(MediaType.APPLICATION_JSON)
                 .rx() //use the RX invoker

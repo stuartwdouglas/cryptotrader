@@ -33,6 +33,8 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.enterprise.context.ApplicationScoped;
@@ -44,6 +46,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.container.AsyncResponse;
@@ -104,6 +107,18 @@ public class BitcoinExchangeEndpoint {
     @Inject
     @BitcoinNews
     private Event<String> newsEvent;
+
+    private Client client;
+
+    @PostConstruct
+    private void setup() {
+        client = ClientBuilder.newClient();
+    }
+
+    @PreDestroy
+    private void close() {
+        client.close();
+    }
 
     /**
      * The trading endpoint. Trades are performed asyncronously, but slightly differently for purchaes and sales
@@ -207,7 +222,7 @@ public class BitcoinExchangeEndpoint {
                     bankTransaction.setName(trade.getName());
 
 
-                    try (Response bankResponse = ClientBuilder.newClient()
+                    try (Response bankResponse = client
                             .target(TRANSACT + trade.getBankAccountNo())
                             .request(MediaType.APPLICATION_JSON_TYPE)
                             .post(Entity.entity(bankTransaction, MediaType.APPLICATION_JSON_TYPE))) {

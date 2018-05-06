@@ -6,6 +6,7 @@ var currency = new Intl.NumberFormat('en-US', {
   // and is usually already 2
 });
 
+var evtSource = new EventSource("/game/rest/broadcast");
 class App extends React.Component {
 
     constructor(props) {
@@ -38,9 +39,8 @@ class App extends React.Component {
             alert("Failed to start game")
         });
 
-        //start updating the bitcoin price using server sent events
-        var evtSource = new EventSource("/game/rest/bitcoin/data/watch");
-        evtSource.onmessage = this.updateBitcoinData;
+        //start updating the bitcoin price and leaderboard using server sent events
+        evtSource.addEventListener("bitcoin", this.updateBitcoinData);
     }
 
     updateBitcoinData(e) {
@@ -170,8 +170,7 @@ class LeaderBoard extends React.Component {
     }
 
     componentDidMount() {
-        var evtSource = new EventSource("/game/rest/leaderboard");
-        evtSource.onmessage = this.updateLeaderboard;
+        evtSource.addEventListener("leaderboard", this.updateLeaderboard);
     }
 
     updateLeaderboard(e) {
