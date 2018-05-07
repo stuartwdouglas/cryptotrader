@@ -59,12 +59,6 @@ public class LeaderBoardService {
     @Inject
     private AccountManager accountManager;
 
-
-    /**
-     * cached last leaderboard that we send on connect
-     */
-    private volatile String lastLeaderboard;
-
     private Client client;
 
     @Inject
@@ -80,7 +74,7 @@ public class LeaderBoardService {
         client.close();
     }
 
-    @Schedule(second = "1,15,30,45", hour = "*", minute = "*")
+    @Schedule(second = "1,10,20,30,40,50", hour = "*", minute = "*")
     public void sendUpdate() {
         //we need to get the holdings and the price
         //we make two different requests and use the thenCombine method to
@@ -125,7 +119,7 @@ public class LeaderBoardService {
                                 .add(NAME, user.getName())
                                 .add(VALUE, user.getNetWorth()));
                     }
-                    broadcast.fireAsync(new BroadcastEvent("leaderboard", lastLeaderboard = result.build().toString()));
+                    broadcast.fireAsync(new BroadcastEvent("leaderboard", result.build().toString()));
                 });
 
 
