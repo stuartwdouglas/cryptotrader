@@ -6,7 +6,7 @@
 
     <groupId>org.jboss.cryptotrader</groupId>
     <artifactId>cryptotrader-game</artifactId>
-    <version>1.0.0.Alpha1-SNAPSHOT</version>
+    <version>1.0.0.Alpha2-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <dependencies>
@@ -62,7 +62,7 @@
                 <artifactId>wildfly-javaee7-with-tools</artifactId>
                 <scope>import</scope>
                 <type>pom</type>
-                <version>10.0.0.Final</version>
+                <version>13.0.0.Final</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
