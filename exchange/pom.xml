@@ -6,7 +6,7 @@
 
     <groupId>org.jboss.cryptotrader</groupId>
     <artifactId>exchange</artifactId>
-    <version>1.0.0.Alpha1</version>
+    <version>1.0.0.Alpha2</version>
     <properties>
         <jboss-jaxrs-api_2.1_spec.version>1.0.0.Final</jboss-jaxrs-api_2.1_spec.version>
         <jboss-servlet-api_4.0_spec.version>1.0.0.Final</jboss-servlet-api_4.0_spec.version>
@@ -62,7 +62,7 @@
                 <artifactId>wildfly-javaee7-with-tools</artifactId>
                 <scope>import</scope>
                 <type>pom</type>
-                <version>10.0.0.Final</version>
+                <version>13.0.0.Final</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

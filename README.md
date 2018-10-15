@@ -1,6 +1,6 @@
 # Crytotrader Demo
 
-This is a simple demo that demonstrates some of the new features of Java EE that are available in EAP CD 12.
+This is a simple demo that demonstrates some of the new features of Java EE that are available in EAP CD 13.
 
 This application is a very simple game, that lets you trade Bitcoin. It takes the form of two different microservices:
 
@@ -62,7 +62,7 @@ pre-compiled beforehand as per the React documentation.
 ## Deploying to Openshift/Minishift
 
 To deploy to Openshift or Minishift make sure you are logged in, then run the following commands.
-This will deploy on the EAP CD 12 image.
+This will deploy on the EAP CD 13 image.
 
 Note that if you are using openshift starter this will use up most of your resource allocation,
 so if you have other applications running then these commands will likely fail.
